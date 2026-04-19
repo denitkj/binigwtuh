@@ -38,7 +38,7 @@
             overflow-x: hidden;
         }
 
-        /* Teks Melayang */
+        /* Floating Text */
         .floating-text {
             animation: float 3s ease-in-out infinite;
         }
@@ -48,7 +48,7 @@
             50% { transform: translateY(-10px); }
         }
 
-        /* Pengaturan Tumpukan Polaroid */
+        /* Polaroid Stack Styling */
         #gallery-container {
             position: relative;
             height: 420px;
@@ -110,7 +110,7 @@
             font-size: 0.9rem;
         }
 
-        /* Animasi Panah Bawah */
+        /* Button/Trigger Area Below Stack */
         .spread-trigger {
             cursor: pointer;
             transition: all 0.3s;
@@ -174,17 +174,17 @@
     <header class="relative z-10 pt-16 pb-2 text-center">
         <div class="floating-text mb-2">
             <span class="bg-dark-rose/40 text-romance-pink px-3 py-1 rounded-full text-[10px] font-bold border border-romance-pink/20 uppercase tracking-widest">
-                Semesta Kecilku
+                My Universe
             </span>
         </div>
-        <h1 class="font-script text-6xl md:text-7xl text-romance-pink mb-4 drop-shadow-[0_0_15px_rgba(253, 164, 175, 0.4)]">
+        <h1 class="font-script text-6xl md:text-7xl text-romance-pink mb-4 drop-shadow-[0_0_15px_rgba(253,164,175,0.4)]">
             Pap My Bini
         </h1>
         <p class="font-serif italic text-gray-400 text-lg px-4 mb-8">Dalam gelap malam, namamu tetap bersinar. by deni</p>
         
         <!-- Header Buttons -->
         <div class="flex justify-center gap-4 px-4">
-            <button id="btnRequestPap" onclick="requestPap()" class="btn-glow px-6 py-2 bg-transparent border border-romance-pink text-romance-pink rounded-full font-bold text-sm">
+            <button onclick="requestPap()" class="btn-glow px-6 py-2 bg-transparent border border-romance-pink text-romance-pink rounded-full font-bold text-sm">
                 <i class="fa-solid fa-camera-retro mr-2"></i> Minta PAP
             </button>
             <button onclick="openLetter()" class="btn-glow px-6 py-2 bg-romance-pink text-midnight rounded-full font-bold text-sm">
@@ -231,8 +231,6 @@
             <div class="font-hand text-xl leading-relaxed text-gray-300 space-y-6">
                 <p class="font-script text-4xl text-romance-pink mb-4 text-center">Hai Cantikku...</p>
                 <p>Gabut lama nggak bikin website, btw kamu harus ngrubah sikap kamu terhadap hal-hal yang negatif. Kamu harus jadi wanita yang mahal, jangan seperti itu oke.</p>
-                <div class="flex justify-center my-6">
-                    <!-- Placeholder untuk GIF -->
                       <div class="flex justify-center my-6">
                         <img src="mochi-cat.gif" 
                              class="rounded-lg shadow-lg max-w-[200px]" alt="Cute GIF">
@@ -256,7 +254,7 @@
     </footer>
 
     <script>
-        // Efek Partikel
+        // Particle Effect
         const canvas = document.getElementById('sparkleCanvas');
         const ctx = canvas.getContext('2d');
         let sparkles = [];
@@ -273,7 +271,7 @@
         for(let i=0; i<60; i++) sparkles.push(new Sparkle());
         animate();
 
-        // Setup awal tumpukan kartu
+        // Initial Stack setup
         const cards = document.querySelectorAll('.polaroid-dark');
         function initStack() {
             cards.forEach((card, index) => {
@@ -284,37 +282,32 @@
         }
         initStack();
 
-        // Logika menyebar foto
+        // Spread logic triggered by text button
         function spreadPhotos() {
             document.getElementById('gallery-container').classList.add('grid-layout');
             document.getElementById('triggerSection').style.display = 'none';
             cards.forEach(card => card.classList.add('spread'));
         }
 
-        // --- Logika Minta PAP & WhatsApp Redirect ---
+        // Minta PAP - Notifikasi lalu Redirect ke WA
         function requestPap() {
             const alert = document.getElementById('papAlert');
-            const btn = document.getElementById('btnRequestPap');
-            
-            // Tampilkan notifikasi
             alert.classList.add('show');
-            btn.disabled = true; // Mencegah klik ganda
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menghubungi...';
-
-            // Tunggu sebentar (3 detik) sebelum pindah ke WA
+            
+            // Tunggu 3 detik agar user bisa lihat notifikasinya, lalu pindah ke WA
             setTimeout(() => {
                 alert.classList.remove('show');
-                const phoneNumber = "85855208754";
+                const phoneNumber = "085855208754";
                 const message = encodeURIComponent("Hai cantik, minta PAP dong! 🥺");
                 window.location.href = `https://wa.me/${phoneNumber}?text=${message}`;
             }, 3000);
         }
 
-        // Modal
+        // Modals
         function openLetter() { document.getElementById('letterModal').classList.remove('hidden'); }
         function closeLetter() { document.getElementById('letterModal').classList.add('hidden'); }
         function zoomPhoto(el) { document.getElementById('zoomImg').src = el.querySelector('img').src; document.getElementById('zoomModal').classList.remove('hidden'); }
         function closeZoom() { document.getElementById('zoomModal').classList.add('hidden'); }
     </script>
 </body>
-    </html>
+                </html>
