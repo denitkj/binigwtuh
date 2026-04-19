@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Night with You 🌙</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&family=Handlee&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        script: ['Dancing Script', 'cursive'],
+                        hand: ['Handlee', 'cursive'],
+                    },
+                    colors: {
+                        'midnight': '#0a0a0a',
+                        'dark-rose': '#4c0519',
+                        'gold-glow': '#fbbf24',
+                        'romance-pink': '#fda4af',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #f3f4f6;
+            background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0a0a0a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Floating Text */
+        .floating-text {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Polaroid Stack Styling */
+        #gallery-container {
+            position: relative;
+            height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.8s ease;
+            margin-bottom: 20px;
+        }
+
+        #gallery-container.grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            height: auto;
+            padding: 40px 0;
+        }
+
+        .polaroid-dark {
+            background: #171717;
+            padding: 1rem 1rem 3.5rem 1rem;
+            border: 1px solid #262626;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            width: 280px;
+            position: absolute;
+        }
+
+        .polaroid-dark.spread {
+            position: relative;
+            width: 100%;
+            transform: translate(0, 0) rotate(0deg) !important;
+        }
+
+        .polaroid-dark:hover {
+            border-color: #fda4af;
+            box-shadow: 0 0 25px rgba(253, 164, 175, 0.3);
+            z-index: 100 !important;
+            transform: scale(1.05) !important;
+        }
+
+        .polaroid-dark img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            filter: grayscale(10%);
+        }
+
+        .polaroid-dark::after {
+            content: attr(data-caption);
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Handlee', cursive;
+            color: #fda4af;
+            font-size: 0.9rem;
+        }
+
+        /* Button/Trigger Area Below Stack */
+        .spread-trigger {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .spread-trigger:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .bounce-arrow {
+            animation: bounce-arrow 2s infinite;
+        }
+
+        @keyframes bounce-arrow {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(10px); }
+            60% { transform: translateY(5px); }
+        }
+
+        /* Alert Minta PAP */
+        #papAlert {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4c0519;
+            color: #fda4af;
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid #fda4af;
+            z-index: 200;
+            transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(253, 164, 175, 0.4);
+        }
+        #papAlert.show { top: 20px; }
+
+        .btn-glow {
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(253, 164, 175, 0.4);
+        }
+
+        .modal-bg {
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <!-- Alert Minta PAP -->
+    <div id="papAlert" class="font-hand flex items-center gap-3">
+        <i class="fa-solid fa-camera"></i>
+        <span>Minta PAP dong cantik! 🥺</span>
+    </div>
+
+    <canvas id="sparkleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <header class="relative z-10 pt-16 pb-2 text-center">
+        <div class="floating-text mb-2">
+            <span class="bg-dark-rose/40 text-romance-pink px-3 py-1 rounded-full text-[10px] font-bold border border-romance-pink/20 uppercase tracking-widest">
+                My Universe
+            </span>
+        </div>
+        <h1 class="font-script text-6xl md:text-7xl text-romance-pink mb-4 drop-shadow-[0_0_15px_rgba(253,164,175,0.4)]">
+            Pap My Bini
+        </h1>
+        <p class="font-serif italic text-gray-400 text-lg px-4 mb-8">Dalam gelap malam, namamu tetap bersinar. by deni</p>
+        
+        <!-- Header Buttons (Hanya 2) -->
+        <div class="flex justify-center gap-4 px-4">
+            <button onclick="requestPap()" class="btn-glow px-6 py-2 bg-transparent border border-romance-pink text-romance-pink rounded-full font-bold text-sm">
+                <i class="fa-solid fa-camera-retro mr-2"></i> Minta PAP
+            </button>
+            <button onclick="openLetter()" class="btn-glow px-6 py-2 bg-romance-pink text-midnight rounded-full font-bold text-sm">
+                <i class="fa-solid fa-envelope-open-text mr-2"></i> Baca Pesan
+            </button>
+        </div>
+    </header>
+
+    <main class="relative z-10 max-w-7xl mx-auto px-6 py-4">
+        <!-- Tumpukan Foto -->
+        <div id="gallery-container">
+            <div class="polaroid-dark" data-caption="Memori Indah 1" onclick="zoomPhoto(this)">
+                <img src="IMG-20260409-WA0010.jpg" alt="Foto 1">
+            </div>
+            <div class="polaroid-dark" data-caption="Senyum Manismu" onclick="zoomPhoto(this)">
+                <img src="IMG-20260419-WA0018.jpg" alt="Foto 2">
+            </div>
+            <div class="polaroid-dark" data-caption="Cerita Kita" onclick="zoomPhoto(this)">
+                <img src="IMG-20260419-WA0014.jpg" alt="Foto 3">
+            </div>
+            <div class="polaroid-dark" data-caption="Momen Berharga" onclick="zoomPhoto(this)">
+                <img src="IMG-20260419-WA0013.jpg" alt="Foto 4">
+            </div>
+            <div class="polaroid-dark" data-caption="Sederhana Tapi Berkesan" onclick="zoomPhoto(this)">
+                <img sr c="IMG-20260415-WA0007.jpg" alt="Foto 5">
+            </div>
+        </div>
+
+        <!-- Tombol Teks di Bawah Foto -->
+        <div id="triggerSection" class="text-center mt-6 spread-trigger" onclick="spreadPhotos()">
+            <p class="font-hand text-romance-pink text-lg mb-2 drop-shadow-sm">Klik di sini untuk melihat semua foto</p>
+            <div class="bounce-arrow">
+                <i class="fa-solid fa-chevron-down text-romance-pink text-3xl"></i>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Pesan -->
+    <div id="letterModal" class="fixed inset-0 z-[100] hidden modal-bg flex items-center justify-center p-4">
+        <div class="bg-[#151515] border border-gray-800 rounded-2xl max-w-2xl w-full relative p-8 md:p-12 overflow-hidden shadow-2xl">
+            <button onclick="closeLetter()" class="absolute top-4 right-6 text-gray-500 hover:text-romance-pink">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+            <div class="font-hand text-xl leading-relaxed text-gray-300 space-y-6">
+                <p class="font-script text-4xl text-romance-pink mb-4 text-center">Hai Cantikku...</p>
+                <p>Gabut lama nggak bikin website, btw kamu harus ngrubah sikap kamu terhadap hal-hal yang negatif. Kamu harus jadi wanita yang mahal, jangan seperti itu oke.</p>
+                      <div class="flex justify-center my-6">
+                        <img src="mochi-cat.gif" 
+                             class="rounded-lg shadow-lg max-w-[200px]" alt="Cute GIF">
+                    </div>
+                <p>Jangan lupa istirahat ya. Tidur yang nyenyak. Aku selalu ada di sini buat kamu, kapanpun kamu butuh tempat cerita.</p>
+                <p class="text-right font-script text-3xl text-romance-pink mt-10">Semangat ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zoom Modal -->
+    <div id="zoomModal" class="fixed inset-0 z-[100] hidden modal-bg flex items-center justify-center p-4" onclick="closeZoom()">
+        <div class="relative max-w-4xl w-full flex flex-col items-center">
+            <img id="zoomImg" src="" class="max-w-full max-h-[85vh] rounded-lg border-2 border-white/10 shadow-2xl">
+            <p class="text-gray-400 font-hand mt-4">Klik dimana saja untuk menutup</p>
+        </div>
+    </div>
+
+    <footer class="py-12 text-center">
+        <p class="font-hand text-gray-600 italic">"In the dark, we find the light."</p>
+    </footer>
+
+    <script>
+        // Particle Effect
+        const canvas = document.getElementById('sparkleCanvas');
+        const ctx = canvas.getContext('2d');
+        let sparkles = [];
+        function initCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        class Sparkle {
+            constructor() { this.reset(); }
+            reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5; this.speed = Math.random() * 0.2 + 0.05; this.opacity = Math.random(); }
+            update() { this.y -= this.speed; if (this.y < 0) this.reset(); }
+            draw() { ctx.fillStyle = `rgba(253, 164, 175, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); sparkles.forEach(s => { s.update(); s.draw(); }); requestAnimationFrame(animate); }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for(let i=0; i<60; i++) sparkles.push(new Sparkle());
+        animate();
+
+        // Initial Stack setup
+        const cards = document.querySelectorAll('.polaroid-dark');
+        function initStack() {
+            cards.forEach((card, index) => {
+                const rot = (Math.random() * 8 - 4);
+                card.style.transform = `rotate(${rot}deg)`;
+                card.style.zIndex = cards.length - index;
+            });
+        }
+        initStack();
+
+        // Spread logic triggered by text button
+        function spreadPhotos() {
+            document.getElementById('gallery-container').classList.add('grid-layout');
+            document.getElementById('triggerSection').style.display = 'none';
+            cards.forEach(card => card.classList.add('spread'));
+        }
+
+        // Minta PAP 
+        function requestPap() {
+            const alert = document.getElementById('papAlert');
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 4000);
+        }
+
+        // Modals
+        function openLetter() { document.getElementById('letterModal').classList.remove('hidden'); }
+        function closeLetter() { document.getElementById('letterModal').classList.add('hidden'); }
+        function zoomPhoto(el) { document.getElementById('zoomImg').src = el.querySelector('img').src; document.getElementById('zoomModal').classList.remove('hidden'); }
+        function closeZoom() { document.getElementById('zoomModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
