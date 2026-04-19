@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eternal Night with You 🌙</title>
+    <!-- Framework & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&family=Handlee&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <script>
         tailwind.config = {
@@ -38,14 +42,22 @@
             overflow-x: hidden;
         }
 
-        /* Floating Text */
-        .floating-text {
-            animation: float 3s ease-in-out infinite;
+        /* Intro Overlay */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease, visibility 1s;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
         }
 
         /* Polaroid Stack Styling */
@@ -110,16 +122,6 @@
             font-size: 0.9rem;
         }
 
-        /* Button/Trigger Area Below Stack */
-        .spread-trigger {
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .spread-trigger:hover {
-            opacity: 0.8;
-            transform: scale(1.05);
-        }
-
         .bounce-arrow {
             animation: bounce-arrow 2s infinite;
         }
@@ -147,113 +149,150 @@
         }
         #papAlert.show { top: 20px; }
 
-        .btn-glow {
-            transition: all 0.3s ease;
-        }
-        .btn-glow:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(253, 164, 175, 0.4);
-        }
-
         .modal-bg {
             background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Custom AOS Overrides */
+        [data-aos] {
+            pointer-events: none;
+        }
+        .aos-animate {
+            pointer-events: auto;
         }
     </style>
 </head>
-<body class="font-sans">
+<body class="font-sans overflow-hidden" id="body">
 
-    <!-- Alert Minta PAP -->
-    <div id="papAlert" class="font-hand flex items-center gap-3">
-        <i class="fa-solid fa-camera"></i>
-        <span>Minta PAP dong cantik! 🥺</span>
+    <!-- Intro Overlay -->
+    <div id="intro-overlay">
+        <h2 data-aos="zoom-in" data-aos-duration="1500" class="font-script text-5xl md:text-7xl text-romance-pink text-center px-4">
+            Hallo Anggun Cantik
+        </h2>
+        <button onclick="startApp()" data-aos="fade-up" data-aos-delay="800" class="mt-10 px-8 py-3 border border-romance-pink text-romance-pink rounded-full hover:bg-romance-pink hover:text-midnight transition-all duration-300 font-bold tracking-widest uppercase text-xs">
+            Masuk ke foto u
+        </button>
     </div>
 
-    <canvas id="sparkleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
-
-    <header class="relative z-10 pt-16 pb-2 text-center">
-        <div class="floating-text mb-2">
-            <span class="bg-dark-rose/40 text-romance-pink px-3 py-1 rounded-full text-[10px] font-bold border border-romance-pink/20 uppercase tracking-widest">
-                My Universe
-            </span>
-        </div>
-        <h1 class="font-script text-6xl md:text-7xl text-romance-pink mb-4 drop-shadow-[0_0_15px_rgba(253,164,175,0.4)]">
-            Pap My Bini
-        </h1>
-        <p class="font-serif italic text-gray-400 text-lg px-4 mb-8">Dalam gelap malam, namamu tetap bersinar. by deni</p>
-        
-        <!-- Header Buttons -->
-        <div class="flex justify-center gap-4 px-4">
-            <button onclick="requestPap()" class="btn-glow px-6 py-2 bg-transparent border border-romance-pink text-romance-pink rounded-full font-bold text-sm">
-                <i class="fa-solid fa-camera-retro mr-2"></i> Minta PAP
-            </button>
-            <button onclick="openLetter()" class="btn-glow px-6 py-2 bg-romance-pink text-midnight rounded-full font-bold text-sm">
-                <i class="fa-solid fa-envelope-open-text mr-2"></i> Baca Pesan
-            </button>
-        </div>
-    </header>
-
-    <main class="relative z-10 max-w-7xl mx-auto px-6 py-4">
-        <!-- Tumpukan Foto -->
-        <div id="gallery-container">
-            <div class="polaroid-dark" data-caption="Memori Indah 1" onclick="zoomPhoto(this)">
-                <img src="IMG-20260409-WA0010.jpg" alt="Foto 1">
-            </div>
-            <div class="polaroid-dark" data-caption="Senyum Manismu" onclick="zoomPhoto(this)">
-                <img src="IMG-20260419-WA0018.jpg" alt="Foto 2">
-            </div>
-            <div class="polaroid-dark" data-caption="Cerita Kita" onclick="zoomPhoto(this)">
-                <img src="IMG-20260419-WA0014.jpg" alt="Foto 3">
-            </div>
-            <div class="polaroid-dark" data-caption="Momen Berharga" onclick="zoomPhoto(this)">
-                <img src="IMG-20260419-WA0013.jpg" alt="Foto 4">
-            </div>
-            <div class="polaroid-dark" data-caption="Sederhana Tapi Berkesan" onclick="zoomPhoto(this)">
-                <img src="IMG-20260415-WA0007.jpg" alt="Foto 5">
-            </div>
+    <!-- Main Content Container -->
+    <div id="main-content" class="hidden opacity-0">
+        <!-- Alert Minta PAP -->
+        <div id="papAlert" class="font-hand flex items-center gap-3">
+            <i class="fa-solid fa-camera"></i>
+            <span>Minta PAP dong cantik! 🥺</span>
         </div>
 
-        <!-- Tombol Teks di Bawah Foto -->
-        <div id="triggerSection" class="text-center mt-6 spread-trigger" onclick="spreadPhotos()">
-            <p class="font-hand text-romance-pink text-lg mb-2 drop-shadow-sm">Klik di sini untuk melihat semua foto</p>
-            <div class="bounce-arrow">
-                <i class="fa-solid fa-chevron-down text-romance-pink text-3xl"></i>
-            </div>
-        </div>
-    </main>
+        <canvas id="sparkleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
-    <!-- Modal Pesan -->
-    <div id="letterModal" class="fixed inset-0 z-[100] hidden modal-bg flex items-center justify-center p-4">
-        <div class="bg-[#151515] border border-gray-800 rounded-2xl max-w-2xl w-full relative p-8 md:p-12 overflow-hidden shadow-2xl">
-            <button onclick="closeLetter()" class="absolute top-4 right-6 text-gray-500 hover:text-romance-pink">
-                <i class="fa-solid fa-xmark text-2xl"></i>
-            </button>
-            <div class="font-hand text-xl leading-relaxed text-gray-300 space-y-6">
-                <p class="font-script text-4xl text-romance-pink mb-4 text-center">Hai Cantikku...</p>
-                <p>Gabut lama nggak bikin website, btw kamu harus ngrubah sikap kamu terhadap hal-hal yang negatif. Kamu harus jadi wanita yang mahal, jangan seperti itu oke.</p>
-                      <div class="flex justify-center my-6">
-                        <img src="mochi-cat.gif" 
-                             class="rounded-lg shadow-lg max-w-[200px]" alt="Cute GIF">
+        <header class="relative z-10 pt-16 pb-2 text-center">
+            <div data-aos="fade-down" class="mb-2">
+                <span class="bg-dark-rose/40 text-romance-pink px-3 py-1 rounded-full text-[10px] font-bold border border-romance-pink/20 uppercase tracking-widest">
+                    My Universe
+                </span>
+            </div>
+            <h1 data-aos="zoom-in" data-aos-delay="300" class="font-script text-6xl md:text-7xl text-romance-pink mb-4 drop-shadow-[0_0_15px_rgba(253,164,175,0.4)]">
+                Pap My Bini
+            </h1>
+            <p data-aos="fade-up" data-aos-delay="500" class="font-serif italic text-gray-400 text-lg px-4 mb-8">Dalam gelap malam, namamu tetap bersinar. by deni</p>
+            
+            <div class="flex justify-center gap-4 px-4" data-aos="fade-up" data-aos-delay="700">
+                <button onclick="requestPap()" class="px-6 py-2 bg-transparent border border-romance-pink text-romance-pink rounded-full font-bold text-sm hover:shadow-[0_0_15px_rgba(253, 164, 175, 0.3)] transition-all">
+                    <i class="fa-solid fa-camera-retro mr-2"></i> Minta PAP
+                </button>
+                <button id="btnOpenLetter" class="px-6 py-2 bg-romance-pink text-midnight rounded-full font-bold text-sm hover:shadow-[0_0_15px_rgba(253, 164, 175, 0.4)] transition-all">
+                    <i class="fa-solid fa-envelope-open-text mr-2"></i> Baca Pesan
+                </button>
+            </div>
+        </header>
+
+        <main class="relative z-10 max-w-7xl mx-auto px-6 py-4">
+            <!-- Tumpukan Foto -->
+            <div id="gallery-container" data-aos="fade-up" data-aos-delay="900">
+                <div class="polaroid-dark" data-caption="Memori Indah 1" onclick="zoomPhoto(this)">
+                    <img src="IMG-20260409-WA0010.jpg" alt="Foto 1">
+                </div>
+                <div class="polaroid-dark" data-caption="Senyum Manismu" onclick="zoomPhoto(this)">
+                    <img src="IMG-20260419-WA0018.jpg" alt="Foto 2">
+                </div>
+                <div class="polaroid-dark" data-caption="Cerita Kita" onclick="zoomPhoto(this)">
+                    <img src="IMG-20260419-WA0014.jpg" alt="Foto 3">
+                </div>
+                <div class="polaroid-dark" data-caption="Momen Berharga" onclick="zoomPhoto(this)">
+                    <img src="IMG-20260419-WA0013.jpg" alt="Foto 4">
+                </div>
+                <div class="polaroid-dark" data-caption="Sederhana Tapi Berkesan" onclick="zoomPhoto(this)">
+                    <img src="IMG-20260415-WA0007.jpg" alt="Foto 5">
+                </div>
+            </div>
+
+            <div id="triggerSection" class="text-center mt-6 cursor-pointer" onclick="spreadPhotos()" data-aos="fade-up" data-aos-delay="1100">
+                <p class="font-hand text-romance-pink text-lg mb-2">Klik di sini untuk melihat semua foto</p>
+                <div class="bounce-arrow">
+                    <i class="fa-solid fa-chevron-down text-romance-pink text-3xl"></i>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal Pesan (Fix Bug Baca Pesan) -->
+        <div id="letterModal" class="fixed inset-0 z-[100] hidden modal-bg flex items-center justify-center p-4">
+            <div id="letterContent" class="bg-[#151515] border border-gray-800 rounded-2xl max-w-2xl w-full relative p-8 md:p-12 overflow-hidden shadow-2xl opacity-0 scale-95 transition-all duration-500">
+                <button id="btnCloseLetter" class="absolute top-4 right-6 text-gray-500 hover:text-romance-pink transition-colors">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+                <div class="font-hand text-xl leading-relaxed text-gray-300 space-y-6">
+                    <p class="font-script text-4xl text-romance-pink mb-4 text-center">Hai Cantikku...</p>
+                    <p>Gabut lama nggak bikin website, btw kamu harus ngrubah sikap kamu terhadap hal-hal yang negatif. Kamu harus jadi wanita yang mahal, jangan seperti itu oke.</p>
+                    <div class="flex justify-center my-6">
+                        <img src="mochi-cat.gif" class="rounded-lg shadow-lg max-w-[200px]" alt="Cute GIF">
                     </div>
-                <p>Jangan lupa istirahat ya. Tidur yang nyenyak. Aku selalu ada di sini buat kamu, kapanpun kamu butuh tempat cerita.</p>
-                <p class="text-right font-script text-3xl text-romance-pink mt-10">Semangat ❤️</p>
+                    <p>Jangan lupa istirahat ya. Tidur yang nyenyak. Aku selalu ada di sini buat kamu, kapanpun kamu butuh tempat cerita.</p>
+                    <p class="text-right font-script text-3xl text-romance-pink mt-10">Semangat ❤️</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Zoom Modal -->
-    <div id="zoomModal" class="fixed inset-0 z-[100] hidden modal-bg flex items-center justify-center p-4" onclick="closeZoom()">
-        <div class="relative max-w-4xl w-full flex flex-col items-center">
-            <img id="zoomImg" src="" class="max-w-full max-h-[85vh] rounded-lg border-2 border-white/10 shadow-2xl">
-            <p class="text-gray-400 font-hand mt-4">Klik dimana saja untuk menutup</p>
+        <!-- Zoom Modal -->
+        <div id="zoomModal" class="fixed inset-0 z-[100] hidden modal-bg flex items-center justify-center p-4" onclick="closeZoom()">
+            <div class="relative max-w-4xl w-full flex flex-col items-center">
+                <img id="zoomImg" src="" class="max-w-full max-h-[85vh] rounded-lg border-2 border-white/10 shadow-2xl">
+                <p class="text-gray-400 font-hand mt-4">Klik dimana saja untuk menutup</p>
+            </div>
         </div>
-    </div>
 
-    <footer class="py-12 text-center">
-        <p class="font-hand text-gray-600 italic">"In the dark, we find the light."</p>
-    </footer>
+        <footer class="py-12 text-center relative z-10">
+            <p class="font-hand text-gray-600 italic">"In the dark, we find the light."</p>
+        </footer>
+    </div>
 
     <script>
+        // Initialize AOS
+        AOS.init({
+            once: true,
+            duration: 1000
+        });
+
+        // Intro Logic
+        function startApp() {
+            const intro = document.getElementById('intro-overlay');
+            const main = document.getElementById('main-content');
+            const body = document.getElementById('body');
+            
+            intro.classList.add('fade-out');
+            
+            setTimeout(() => {
+                intro.style.display = 'none';
+                main.classList.remove('hidden');
+                body.classList.remove('overflow-hidden');
+                setTimeout(() => {
+                    main.classList.add('opacity-100');
+                    main.style.transition = 'opacity 1s ease';
+                    AOS.refresh(); // Re-trigger AOS for main content
+                }, 50);
+            }, 1000);
+        }
+
         // Particle Effect
         const canvas = document.getElementById('sparkleCanvas');
         const ctx = canvas.getContext('2d');
@@ -271,7 +310,7 @@
         for(let i=0; i<60; i++) sparkles.push(new Sparkle());
         animate();
 
-        // Initial Stack setup
+        // Polaroid Stack Logic
         const cards = document.querySelectorAll('.polaroid-dark');
         function initStack() {
             cards.forEach((card, index) => {
@@ -282,32 +321,65 @@
         }
         initStack();
 
-        // Spread logic triggered by text button
         function spreadPhotos() {
-            document.getElementById('gallery-container').classList.add('grid-layout');
+            const container = document.getElementById('gallery-container');
+            container.classList.add('grid-layout');
             document.getElementById('triggerSection').style.display = 'none';
-            cards.forEach(card => card.classList.add('spread'));
+            
+            cards.forEach((card, index) => {
+                card.classList.add('spread');
+                // Staggered AOS-like effect manually
+                card.style.transitionDelay = `${index * 0.1}s`;
+            });
         }
 
-        // Minta PAP - Notifikasi lalu Redirect ke WA
+        // Minta PAP & WhatsApp Redirect
         function requestPap() {
             const alert = document.getElementById('papAlert');
             alert.classList.add('show');
-            
-            // Tunggu 3 detik agar user bisa lihat notifikasinya, lalu pindah ke WA
             setTimeout(() => {
                 alert.classList.remove('show');
-                const phoneNumber = "6285855208754";
+                const phoneNumber = "85855208754";
                 const message = encodeURIComponent("Hai cantik, minta PAP dong! 🥺");
                 window.location.href = `https://wa.me/${phoneNumber}?text=${message}`;
             }, 3000);
         }
 
-        // Modals
-        function openLetter() { document.getElementById('letterModal').classList.remove('hidden'); }
-        function closeLetter() { document.getElementById('letterModal').classList.add('hidden'); }
-        function zoomPhoto(el) { document.getElementById('zoomImg').src = el.querySelector('img').src; document.getElementById('zoomModal').classList.remove('hidden'); }
-        function closeZoom() { document.getElementById('zoomModal').classList.add('hidden'); }
+        // --- Modal Logic (Fixed Bug) ---
+        const letterModal = document.getElementById('letterModal');
+        const letterContent = document.getElementById('letterContent');
+        const btnOpen = document.getElementById('btnOpenLetter');
+        const btnClose = document.getElementById('btnCloseLetter');
+
+        btnOpen.addEventListener('click', () => {
+            letterModal.classList.remove('hidden');
+            setTimeout(() => {
+                letterContent.classList.remove('opacity-0', 'scale-95');
+                letterContent.classList.add('opacity-100', 'scale-100');
+            }, 10);
+        });
+
+        const closeLetter = () => {
+            letterContent.classList.remove('opacity-100', 'scale-100');
+            letterContent.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                letterModal.classList.add('hidden');
+            }, 500);
+        };
+
+        btnClose.addEventListener('click', closeLetter);
+        letterModal.addEventListener('click', (e) => {
+            if (e.target === letterModal) closeLetter();
+        });
+
+        // Zoom Logic
+        function zoomPhoto(el) {
+            document.getElementById('zoomImg').src = el.querySelector('img').src;
+            document.getElementById('zoomModal').classList.remove('hidden');
+        }
+        function closeZoom() {
+            document.getElementById('zoomModal').classList.add('hidden');
+        }
     </script>
 </body>
-                </html>
+    </html>
